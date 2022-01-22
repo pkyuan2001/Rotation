@@ -10,10 +10,7 @@ import javax.swing.Timer;
 import java.lang.Math;
 
 public class Animation {
-
-    /**
-     * @param args the command line arguments
-     */
+    private boolean flag = false;
     public static void main(String[] args) {
         new Animation();
     }
@@ -27,7 +24,7 @@ public class Animation {
                 frame.add(new Panel());
                 frame.pack();
                 frame.setVisible(true);
-                frame.setSize(400,400);
+                frame.setSize(600,600);
                 frame.setLocation(800,150);
             }
         });
@@ -35,27 +32,48 @@ public class Animation {
 
     public class Panel extends JPanel {
 
-        private final double[] topLeftFront = {100,400,0};
-        private final double[] topRightFront = {400,400,0};
-        private final double[] bottomLeftFront = {100,100,0};
-        private final double[] bottomRightFront = {400,100,0};
-        private final double[] topLeftBack = {100,400,300};
-        private final double[] topRightBack = {400,400,300};
-        private final double[] bottomLeftBack = {100,100,300};
-        private final double[] bottomRightBack = {400,100,300};
+        private final double[] topLeftFront = {0.05,0.95,0.05};
+        private final double[] topRightFront = {0.95,0.95,0.05};
+        private final double[] bottomLeftFront = {0.05,0.05,0.05};
+        private final double[] bottomRightFront = {0.95,0.05,0.05};
+        private final double[] topLeftBack = {0.05,0.95,0.95};
+        private final double[] topRightBack = {0.95,0.95,0.95};
+        private final double[] bottomLeftBack = {0.05,0.05,0.95};
+        private final double[] bottomRightBack = {0.95,0.05,0.95};
         private final Vectors[] cubePoints = {new Vectors(topLeftFront),new Vectors(topRightFront),
                 new Vectors(bottomLeftFront), new Vectors(bottomRightFront), new Vectors(topLeftBack),
                 new Vectors(topRightBack), new Vectors(bottomLeftBack), new Vectors(bottomRightBack)};
         private void rotate() throws Exception {
             int i = 0;
-            for (Vectors point: cubePoints) {
-                cubePoints[i] = XRotation(point, 0.01);
-                i++;
+            int [][] position = Project();
+            for(int [] point : position){
+                if(point[0] <= 10){
+                    flag = true;
+                    break;
+                }
+                if(point[0] >= 900){
+                    flag = false;
+                    break;
+                }
+            }
+            if (!flag) {
+                for (Vectors vec : cubePoints) {
+                    cubePoints[i] = LeftXRotation(vec);
+                    vec.setX(vec.getPosX()+1);
+                    i++;
+                }
+            }
+            else{
+                for(Vectors vec: cubePoints){
+                    cubePoints[i] = LeftXRotation(vec);
+                    vec.setX(vec.getPosX()+10);
+                    i++;
+                }
             }
         }
 
         public Panel() {
-            Timer timer = new Timer(100, new ActionListener() {
+            Timer timer = new Timer(1, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -71,14 +89,20 @@ public class Animation {
 
 
 
-        private Vectors XRotation(Vectors point, Double degree) throws Exception {
-            double[][] entries = {{Math.cos(degree), 0, Math.sin(degree)}, {0,1,0},
-                    {Math.sin(degree), 0, Math.cos(degree)}};
+        private Vectors LeftXRotation(Vectors point) throws Exception {
+            double[][] entries = {{Math.cos(0.01), 0, Math.sin(0.01)}, {0,1,0},
+                    {-Math.sin(0.01), 0, Math.cos(0.01)}};
+            Matrix rotationMatrix = new Matrix(entries);
+            return rotationMatrix.mult(point.toColumnMatrix()).toVector();
+        }
+        private Vectors RightXRotation(Vectors point) throws Exception {
+            double[][] entries = {{Math.cos(180.01), 0, Math.sin(180.01)}, {0,1,0},
+                    {-Math.sin(180.01), 0, Math.cos(180.01)}};
             Matrix rotationMatrix = new Matrix(entries);
             return rotationMatrix.mult(point.toColumnMatrix()).toVector();
         }
         private double[] Projection(Vectors point) throws Exception {
-            double[][] entries = {{1,0,0}, {0,1,0}};
+            double[][] entries = {{100,0,0}, {0,100,0}};
             Matrix projectionMatrix = new Matrix(entries);
             return projectionMatrix.mult(point.toColumnMatrix()).toPos();
         }
