@@ -52,4 +52,34 @@ public class Matrix {
     public String toString(){
         return Arrays.deepToString(this.matrix);
     }
+    public Vectors toVector() throws Exception {
+        if(rowLen > 1){
+            throw new Exception("You cannot convert this to a vector");
+        }
+        else{
+            return new Vectors(this.getColumn(0));
+        }
+    }
+
+    public double [] toPos() throws Exception {
+        if(rowLen > 1){
+            throw new Exception("You cannot convert this to a vector");
+        }
+        else{
+            return this.getColumn(0);
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        double[][] entries = {{Math.cos(30), -Math.sin(30), 0}, {Math.sin(30), Math.cos(30), 0},
+                {0, 0, 1}};
+        Matrix rotationMatrix = new Matrix(entries);
+        Vectors vec = new Vectors(1,1,1);
+        double[][] p = {{1, 0, 0}, {0, 1, 0}};
+        Matrix projection = new Matrix(p);
+        Matrix rotated = rotationMatrix.mult(vec.toColumnMatrix());
+        Matrix projected = projection.mult(rotated);
+        System.out.println(rotated);
+        System.out.print(projected);
+    }
 }

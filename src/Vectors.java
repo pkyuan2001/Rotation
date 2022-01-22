@@ -6,6 +6,11 @@ public class Vectors {
         columnMatrix[1] = y;
         columnMatrix[2] = z;
     }
+    public Vectors(double[] col) {
+        columnMatrix[0] = col[0];
+        columnMatrix[1] = col[1];
+        columnMatrix[2] = col[2];
+    }
 
     public void setX(double newPos) {
         columnMatrix[0] = newPos;
@@ -33,6 +38,10 @@ public class Vectors {
 
     public double getPosZ() {
         return columnMatrix[2];
+    }
+
+    public double[] getPos(){
+        return new double[] {this.getPosX(), this.getPosY(), this.getPosZ()};
     }
 
     public Matrix toColumnMatrix() throws Exception {
